@@ -1,21 +1,18 @@
-# Hash Lab 鏈結雜湊表
+# 資料結構實驗室
 
-免安裝、免建置的互動式資料結構教學頁。輸入剛好 15 個整數，即可觀察雜湊函式 `key % 13` 如何將資料分配到 13 個 bucket，並以鏈結法保存碰撞。頁面也提供隨機資料、key 查找與分布統計。
+這個 repository 保留原本的 MaxHeap 堆積排序實驗室，並新增獨立的鏈結雜湊表教學頁。兩個頁面都不需要安裝套件或建置工具。
+
+## 頁面
+
+- MaxHeap：直接開啟根目錄的 `index.html`，或前往 GitHub Pages 首頁。
+- 鏈結雜湊表：開啟 `hash-table/index.html`，或前往 GitHub Pages 的 `/hash-table/` 路徑。
+
+雜湊表可輸入剛好 15 個安全範圍內的整數，使用 `key % 13` 分配至 13 個 bucket，以鏈結法處理碰撞；另提供隨機資料、查找與分布統計。負數餘數會正規化至 `0` 到 `12`。
 
 ## 本機使用
 
-直接以瀏覽器開啟 `index.html` 即可。數字可用逗號或空格分隔，支援負數、重複值與安全範圍內的整數。負數餘數會正規化到 `0` 至 `12`。
+直接以瀏覽器開啟對應頁面的 `index.html` 即可。MaxHeap 支援最多 31 個整數；雜湊表支援負數、重複值及 15 個整數。
 
 ## GitHub Pages 部署
 
-將變更推送到 GitHub repository 的 `main` 分支，`.github/workflows/pages.yml` 會自動發布。GitHub Pages 的來源需設為 **GitHub Actions**；完成後可在 repository 的 **Settings → Pages** 查看網址。
-
-## 雜湊表
-
-| 項目 | 說明 |
-| --- | --- |
-| Bucket 數量 | 13 |
-| 雜湊函式 | `key % 13` |
-| 碰撞處理 | Separate chaining（鏈結法） |
-| 查找平均時間 | O(1)，視負載因子與分布而定 |
-| 查找最壞時間 | O(n)，所有 key 落在同一 bucket 時 |
+推送至 `main` 分支後，`.github/workflows/pages.yml` 會自動發布 repository 根目錄及子目錄。GitHub Pages 的來源需設為 **GitHub Actions**。

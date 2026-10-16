@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f2f1eb" />
+    <meta name="description" content="輸入 15 個整數，透過 key % 13 與鏈結法觀察雜湊表的碰撞處理。" />
+    <title>Hash Lab | 鏈結雜湊表</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=IBM+Plex+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css?v=2" />
+    <script src="./app.js?v=2" defer></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="wordmark" href="#top" aria-label="Hash Lab 首頁"><span class="brand-mark">H</span><span>結構實驗室</span></a>
+      <span class="topbar-note">資料結構 / 02</span>
+      <a class="top-link" href="../">MaxHeap <span aria-hidden="true">↗</span></a>
+      <a class="top-link" href="#table">雜湊表 <span aria-hidden="true">↘</span></a>
+    </header>
+
+    <main id="top">
+      <section class="intro" aria-labelledby="page-title">
+        <div class="eyebrow"><span class="eyebrow-dot"></span>HASH TABLE · SEPARATE CHAINING</div>
+        <h1 id="page-title">撞在一起，<span>就排成一條鏈。</span></h1>
+        <p class="intro-copy">15 個整數進入 13 個桶子。看 key % 13 如何分配位置，再用鏈結法收好碰撞。</p>
+      </section>
+
+      <section class="workspace" aria-label="雜湊表操作區">
+        <div class="workspace-heading">
+          <div><span class="section-index">01 / INSERT</span><h2>輸入資料</h2></div>
+          <span class="rule-tag"><span>雜湊函式</span>key % 13</span>
+        </div>
+
+        <div class="input-row">
+          <label class="sequence-field" for="keys-input">
+            <span class="field-label">15 個整數 <span>以逗號或空格分隔</span></span>
+            <textarea id="keys-input" rows="2" spellcheck="false" aria-describedby="input-help">18, 31, 44, 57, 70, 8, 21, 34, 9, 22, 3, 16, 12, 25, 11</textarea>
+          </label>
+          <button class="button button-primary" id="build-button" type="button"><span aria-hidden="true">↗</span> 建立雜湊表</button>
+        </div>
+        <div class="input-meta"><span id="input-help">必須剛好 15 個安全範圍內的整數，可使用負數與重複值</span><button class="text-button" id="random-button" type="button">換一組隨機資料 <span aria-hidden="true">⟳</span></button></div>
+
+        <div class="lookup-row">
+          <label for="lookup-input">查找 key</label>
+          <input id="lookup-input" type="number" inputmode="numeric" placeholder="輸入整數" />
+          <button class="button button-small" id="lookup-button" type="button" title="搜尋雜湊表中的數值">⌕ 查找</button>
+          <span id="operation-status" role="status" aria-live="polite">已建立範例資料。相同索引的 key 會沿鏈結依序排列。</span>
+        </div>
+
+        <div class="table-panel" id="table">
+          <div class="table-panel-head">
+            <div class="table-label"><span class="live-dot"></span> HASH TABLE <span class="table-count" id="key-count">15 / 15 個 key</span></div>
+            <div class="table-legend"><span><i class="legend-head"></i>鏈結首節點</span><span><i class="legend-next">→</i>指向下一節點</span></div>
+          </div>
+          <div class="bucket-list" id="bucket-list" aria-label="雜湊表索引 0 到 12"></div>
+          <div class="table-panel-foot"><span>每個 bucket 對應一條單向鏈結串列</span><span class="formula-note">index = key % 13（負餘數正規化）</span></div>
+        </div>
+      </section>
+
+      <section class="summary" aria-labelledby="summary-title">
+        <div class="summary-heading">
+          <div><span class="section-index">02 / DISTRIBUTION</span><h2 id="summary-title">分布概況</h2></div>
+          <p>不同 key 算出相同索引時，不覆蓋資料，而是接到該 bucket 的鏈結尾端。</p>
+        </div>
+        <div class="stats-row">
+          <div class="stat"><span>已存放</span><strong id="stored-count">15</strong><small>個 key</small></div>
+          <div class="stat"><span>碰撞次數</span><strong id="collision-count">—</strong><small>後續節點</small></div>
+          <div class="stat"><span>非空 bucket</span><strong id="used-count">—</strong><small>共 13 格</small></div>
+          <div class="stat stat-formula"><span>平均鏈結長度</span><strong id="average-length">—</strong><small>非空 bucket</small></div>
+        </div>
+        <div class="takeaway"><span class="takeaway-mark">↗</span><p><strong>鏈結法的重點。</strong> 碰撞不會讓資料消失；同一 bucket 可以保存多個 key，查找時再逐一比對鏈結中的節點。</p><span class="sample-size">13 BUCKETS</span></div>
+      </section>
+    </main>
+
+    <footer><span>結構實驗室 <span class="footer-sep">/</span> HASH TABLE</span><span>先理解結構，再看見效率。</span></footer>
+  </body>
+</html>
