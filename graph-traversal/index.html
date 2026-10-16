@@ -9,8 +9,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=IBM+Plex+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="./styles.css?v=1" />
-    <script src="./app.js?v=1" defer></script>
+    <link rel="stylesheet" href="./styles.css?v=2" />
+    <script src="./app.js?v=2" defer></script>
   </head>
   <body>
     <header class="topbar">
@@ -40,14 +40,14 @@
               <div class="graph-legend"><span><i class="legend-visited"></i>已訪問</span><span><i class="legend-tree"></i>搜尋樹邊</span></div>
             </div>
             <div class="graph-scroll">
-              <svg id="graph-svg" viewBox="0 0 720 390" role="img" aria-labelledby="graph-title graph-description">
-                <title id="graph-title">六個地點與九條道路構成的無向圖</title>
-                <desc id="graph-description">頂點 A 到 F，邊為 A-B、A-C、B-C、B-D、C-D、C-E、D-E、D-F、E-F。</desc>
+              <svg id="graph-svg" viewBox="0 0 600 360" role="img" aria-labelledby="graph-title graph-description">
+                <title id="graph-title">校園六個地點與道路通行時間</title>
+                <desc id="graph-description">校門 A、圖書館 B、餐廳 C、系館 D、宿舍 E、體育館 F，以九條標示分鐘數的雙向道路相連。</desc>
                 <g id="graph-edges" aria-hidden="true"></g>
                 <g id="graph-nodes"></g>
               </svg>
             </div>
-            <div class="graph-panel-foot"><span>道路皆為雙向；相鄰頂點依字母順序探索</span><span id="edge-count">9 條邊</span></div>
+            <div class="graph-panel-foot"><span>道路皆為雙向；邊旁數字為通行時間（分鐘）</span><span id="edge-count">9 條邊</span></div>
           </div>
 
           <aside class="control-panel" aria-label="搜尋設定與結果">

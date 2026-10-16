@@ -1,15 +1,34 @@
 const vertices = ['A', 'B', 'C', 'D', 'E', 'F'];
 const edges = [
-  ['A', 'B'], ['A', 'C'], ['B', 'C'], ['B', 'D'], ['C', 'D'],
-  ['C', 'E'], ['D', 'E'], ['D', 'F'], ['E', 'F'],
+  ['A', 'B', 4], ['A', 'C', 2], ['B', 'C', 1], ['B', 'D', 5], ['C', 'D', 8],
+  ['C', 'E', 10], ['D', 'E', 2], ['D', 'F', 6], ['E', 'F', 3],
 ];
 const positions = {
-  A: [100, 105],
-  B: [300, 55],
-  C: [265, 195],
-  D: [475, 155],
-  E: [475, 330],
-  F: [650, 245],
+  A: [76, 182],
+  B: [214, 75],
+  C: [214, 289],
+  D: [387, 75],
+  E: [387, 289],
+  F: [526, 182],
+};
+const placeNames = {
+  A: '校門',
+  B: '圖書館',
+  C: '餐廳',
+  D: '系館',
+  E: '宿舍',
+  F: '體育館',
+};
+const weightLabels = {
+  'A-B': [143, 131],
+  'A-C': [139, 238],
+  'B-C': [193, 185],
+  'B-D': [300, 69],
+  'C-D': [301, 187],
+  'C-E': [301, 284],
+  'D-E': [363, 184],
+  'D-F': [456, 127],
+  'E-F': [456, 239],
 };
 const adjacency = new Map(vertices.map((vertex) => [vertex, []]));
 edges.forEach(([left, right]) => {
@@ -39,7 +58,7 @@ let cursor = 0;
 let timer = null;
 
 function buildGraph() {
-  edges.forEach(([left, right]) => {
+  edges.forEach(([left, right, weight]) => {
     const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
     line.setAttribute('x1', String(positions[left][0]));
     line.setAttribute('y1', String(positions[left][1]));
@@ -48,6 +67,15 @@ function buildGraph() {
     line.setAttribute('class', 'graph-edge');
     line.dataset.edge = `${left}-${right}`;
     elements.svgEdges.append(line);
+
+    const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    const [labelX, labelY] = weightLabels[`${left}-${right}`];
+    label.setAttribute('class', 'edge-weight');
+    label.setAttribute('x', String(labelX));
+    label.setAttribute('y', String(labelY));
+    label.setAttribute('text-anchor', 'middle');
+    label.textContent = `${weight} 分`;
+    elements.svgEdges.append(label);
   });
 
   vertices.forEach((vertex) => {
@@ -57,18 +85,23 @@ function buildGraph() {
     group.setAttribute('transform', `translate(${x} ${y})`);
     group.setAttribute('tabindex', '0');
     group.setAttribute('role', 'button');
-    group.setAttribute('aria-label', `選擇 ${vertex} 作為起點`);
+    group.setAttribute('aria-label', `選擇 ${vertex} ${placeNames[vertex]}作為起點`);
     group.dataset.vertex = vertex;
 
     const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    circle.setAttribute('r', '27');
+    circle.setAttribute('r', '24');
     circle.setAttribute('class', 'node-circle');
     const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     label.setAttribute('class', 'node-label');
     label.setAttribute('text-anchor', 'middle');
     label.setAttribute('dy', '0.36em');
     label.textContent = vertex;
-    group.append(circle, label);
+    const place = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    place.setAttribute('class', 'node-place');
+    place.setAttribute('text-anchor', 'middle');
+    place.setAttribute('y', vertex === 'B' || vertex === 'D' ? '-33' : '42');
+    place.textContent = placeNames[vertex];
+    group.append(circle, label, place);
     group.addEventListener('click', () => selectStart(vertex));
     group.addEventListener('keydown', (event) => {
       if (event.key === 'Enter' || event.key === ' ') {
