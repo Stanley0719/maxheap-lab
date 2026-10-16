@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f2f1eb" />
+    <meta name="description" content="以 6 個地點與 9 條道路互動觀察圖形的深度優先搜尋 DFS 與廣度優先搜尋 BFS。" />
+    <title>Graph Lab | DFS 與 BFS 圖形搜尋</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=IBM+Plex+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css?v=1" />
+    <script src="./app.js?v=1" defer></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="wordmark" href="../" aria-label="結構實驗室首頁"><span class="brand-mark">G</span><span>結構實驗室</span></a>
+      <span class="topbar-note">資料結構 / 03</span>
+      <a class="top-link" href="../">MaxHeap <span aria-hidden="true">↗</span></a>
+      <a class="top-link" href="../hash-table/">鏈結雜湊表 <span aria-hidden="true">↗</span></a>
+    </header>
+
+    <main id="top">
+      <section class="intro" aria-labelledby="page-title">
+        <div class="eyebrow"><span class="eyebrow-dot"></span>GRAPH SEARCH · DFS / BFS</div>
+        <h1 id="page-title">從一個地點出發，<span>走遍整張圖。</span></h1>
+        <p class="intro-copy">同一張路網，換一種搜尋策略；看看深度優先與廣度優先如何走出不同路徑。</p>
+      </section>
+
+      <section class="workspace" aria-label="圖形搜尋操作區">
+        <div class="workspace-heading">
+          <div><span class="section-index">01 / GRAPH</span><h2>六個地點，九條無向道路</h2></div>
+          <span class="rule-tag">|V| = 6 <i></i> |E| = 9</span>
+        </div>
+
+        <div class="graph-layout">
+          <div class="graph-panel">
+            <div class="graph-panel-head">
+              <div class="graph-label"><span class="live-dot"></span>UNDIRECTED GRAPH <span class="graph-count">A — F</span></div>
+              <div class="graph-legend"><span><i class="legend-visited"></i>已訪問</span><span><i class="legend-tree"></i>搜尋樹邊</span></div>
+            </div>
+            <div class="graph-scroll">
+              <svg id="graph-svg" viewBox="0 0 720 390" role="img" aria-labelledby="graph-title graph-description">
+                <title id="graph-title">六個地點與九條道路構成的無向圖</title>
+                <desc id="graph-description">頂點 A 到 F，邊為 A-B、A-C、B-C、B-D、C-D、C-E、D-E、D-F、E-F。</desc>
+                <g id="graph-edges" aria-hidden="true"></g>
+                <g id="graph-nodes"></g>
+              </svg>
+            </div>
+            <div class="graph-panel-foot"><span>道路皆為雙向；相鄰頂點依字母順序探索</span><span id="edge-count">9 條邊</span></div>
+          </div>
+
+          <aside class="control-panel" aria-label="搜尋設定與結果">
+            <div class="control-section">
+              <span class="field-label">搜尋策略</span>
+              <div class="mode-switch" role="group" aria-label="選擇搜尋策略">
+                <button class="mode-button is-selected" type="button" data-mode="dfs" aria-pressed="true">DFS <small>深度優先</small></button>
+                <button class="mode-button" type="button" data-mode="bfs" aria-pressed="false">BFS <small>廣度優先</small></button>
+              </div>
+            </div>
+
+            <div class="start-row">
+              <label class="field-label" for="start-node">起點</label>
+              <select id="start-node">
+                <option>A</option><option>B</option><option>C</option><option selected>D</option><option>E</option><option>F</option>
+              </select>
+              <span class="start-hint">也可點選圖上的地點</span>
+            </div>
+
+            <div class="playback-controls">
+              <button class="button button-primary" id="step-button" type="button"><span aria-hidden="true">›</span> 下一步</button>
+              <button class="button" id="play-button" type="button" aria-label="自動播放走訪">▶</button>
+              <button class="button" id="reset-button" type="button" aria-label="重設走訪">↺</button>
+            </div>
+
+            <div class="status-line" id="operation-status" role="status" aria-live="polite">從 D 開始。選擇策略後逐步探索相鄰地點。</div>
+
+            <div class="result-section">
+              <div class="result-heading"><span>走訪順序</span><span id="step-count">0 / 6</span></div>
+              <div class="visit-order" id="visit-order" aria-label="已走訪的頂點"></div>
+            </div>
+
+            <div class="frontier-section">
+              <div class="result-heading"><span id="frontier-label">目前遞迴路徑</span><span id="frontier-count">0</span></div>
+              <div class="frontier-list" id="frontier-list" aria-label="目前搜尋中的頂點"></div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="comparison" aria-labelledby="compare-title">
+        <div class="compare-heading">
+          <div><span class="section-index">02 / COMPARE</span><h2 id="compare-title">深度，或廣度？</h2></div>
+          <p>兩種走法都會拜訪每個可到達頂點，差別在於下一個要探索的候選點。</p>
+        </div>
+        <div class="compare-grid">
+          <article class="algorithm dfs-algorithm">
+            <div class="algorithm-top"><span class="algorithm-icon">↓</span><span class="algorithm-name">深度優先搜尋 <small>DEPTH-FIRST SEARCH</small></span><span class="algorithm-complexity">O(V + E)</span></div>
+            <p>沿著一條路盡可能往下走，遇到死路再回溯；常用堆疊或遞迴實作。</p>
+          </article>
+          <article class="algorithm bfs-algorithm">
+            <div class="algorithm-top"><span class="algorithm-icon">→</span><span class="algorithm-name">廣度優先搜尋 <small>BREADTH-FIRST SEARCH</small></span><span class="algorithm-complexity">O(V + E)</span></div>
+            <p>先拜訪距離起點一條邊的鄰居，再逐層向外探索；常用佇列實作。</p>
+          </article>
+        </div>
+        <div class="takeaway"><span class="takeaway-mark">↗</span><p><strong>本圖的順序規則。</strong> 每次都依 A 到 F 的字母順序檢查鄰居，因此相同起點與策略會得到固定結果。</p><span class="sample-size">6 VERTICES</span></div>
+      </section>
+    </main>
+
+    <footer><span>結構實驗室 <span class="footer-sep">/</span> GRAPH SEARCH</span><span>先理解結構，再看見效率。</span></footer>
+  </body>
+</html>
