@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f2f1eb" />
+    <meta name="description" content="使用 Prim 與 Kruskal 演算法，從不同起點互動探索六個校園地點的最小生成樹。" />
+    <title>最小生成樹 | 結構實驗室</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=IBM+Plex+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css?v=1" />
+    <script src="./app.js?v=1" defer></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="wordmark" href="../" aria-label="結構實驗室首頁"><span class="brand-mark">M</span><span>結構實驗室</span></a>
+      <span class="topbar-note">資料結構 / 04</span>
+      <a class="top-link" href="../">MaxHeap <span aria-hidden="true">↗</span></a>
+      <a class="top-link" href="../graph-traversal/">DFS / BFS <span aria-hidden="true">↗</span></a>
+      <a class="top-link" href="../hash-table/">鏈結雜湊表 <span aria-hidden="true">↗</span></a>
+    </header>
+
+    <main id="top">
+      <section class="intro" aria-labelledby="page-title">
+        <div class="eyebrow"><span class="eyebrow-dot"></span>MINIMUM SPANNING TREE · PRIM / KRUSKAL</div>
+        <h1 id="page-title">連起所有地點，<span>只走最省的路。</span></h1>
+        <p class="intro-copy">每個地點都要連通、不形成環，並讓道路總長度最小。試著從不同地點出發，觀察最小生成樹如何形成。</p>
+      </section>
+
+      <section class="workspace" aria-label="最小生成樹互動操作區">
+        <div class="workspace-heading">
+          <div><span class="section-index">01 / GRAPH</span><h2>六個地點，九條雙向道路</h2></div>
+          <span class="rule-tag">6 個頂點 <i></i> 5 條樹邊</span>
+        </div>
+
+        <div class="graph-layout">
+          <div class="graph-panel">
+            <div class="graph-panel-head">
+              <div class="graph-label"><span class="live-dot"></span>WEIGHTED UNDIRECTED GRAPH <span class="graph-count">A — F</span></div>
+              <div class="graph-legend"><span><i class="legend-tree"></i>已選道路</span><span><i class="legend-frontier"></i>候選道路</span></div>
+            </div>
+            <div class="graph-scroll">
+              <svg id="graph-svg" viewBox="0 0 600 360" role="img" aria-labelledby="graph-title graph-description">
+                <title id="graph-title">校園六個地點及道路長度</title>
+                <desc id="graph-description">校門 A、圖書館 B、餐廳 C、系館 D、宿舍 E、體育館 F，以九條標示長度的雙向道路相連。點選地點可設定 Prim 演算法起點。</desc>
+                <g id="graph-edges" aria-hidden="true"></g>
+                <g id="graph-nodes"></g>
+              </svg>
+            </div>
+            <div class="graph-panel-foot"><span>道路數字為長度；點選地點可更換 Prim 起點</span><span>9 條邊</span></div>
+          </div>
+
+          <aside class="control-panel" aria-label="演算法設定與最小生成樹結果">
+            <div class="control-section">
+              <span class="field-label">選擇演算法</span>
+              <div class="mode-switch" role="group" aria-label="選擇最小生成樹演算法">
+                <button class="mode-button is-selected" type="button" data-mode="prim" aria-pressed="true">Prim <small>指定起點</small></button>
+                <button class="mode-button" type="button" data-mode="kruskal" aria-pressed="false">Kruskal <small>全域最小</small></button>
+              </div>
+            </div>
+
+            <div class="start-row">
+              <label class="field-label" for="start-node">Prim 起點</label>
+              <select id="start-node">
+                <option selected>A</option><option>B</option><option>C</option><option>D</option><option>E</option><option>F</option>
+              </select>
+              <span class="start-hint">六個頂點皆可出發</span>
+            </div>
+
+            <div class="playback-controls">
+              <button class="button button-primary" id="step-button" type="button"><span aria-hidden="true">›</span> 下一步</button>
+              <button class="button" id="play-button" type="button" aria-label="自動播放演算法">▶</button>
+              <button class="button" id="reset-button" type="button" aria-label="重設演算法">↺</button>
+            </div>
+
+            <div class="status-line" id="operation-status" role="status" aria-live="polite"></div>
+
+            <div class="result-section">
+              <div class="result-heading"><span>已選道路</span><span id="edge-count">0 / 5</span></div>
+              <div class="selected-edges" id="selected-edges" aria-label="最小生成樹已選道路"></div>
+            </div>
+
+            <div class="total-row"><span>目前總長度</span><strong id="total-weight">0</strong></div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="comparison" aria-labelledby="compare-title">
+        <div class="compare-heading">
+          <div><span class="section-index">02 / RESULT</span><h2 id="compare-title">六種起點，同一個最小值</h2></div>
+          <p>這張圖的最小生成樹總長度為 13。因為最小解唯一，Prim 從任何地點出發都會得到相同的五條道路。</p>
+        </div>
+        <div class="summary-grid" id="start-results" aria-label="Prim 從各起點出發的最小生成樹結果"></div>
+        <div class="takeaway"><span class="takeaway-mark">✓</span><p><strong>同時滿足三個條件。</strong>五條道路連通全部六個地點、不形成環，總長度 13 是所有可能生成樹中的最小值。Prim 從指定頂點擴張；Kruskal 由最短道路開始，拒絕會形成環的道路。</p><span class="sample-size">TOTAL = 13</span></div>
+      </section>
+    </main>
+
+    <footer><span>結構實驗室 <span class="footer-sep">/</span> MINIMUM SPANNING TREE</span><span>先理解結構，再看見效率。</span></footer>
+  </body>
+</html>

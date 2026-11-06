@@ -1,12 +1,13 @@
 # 資料結構實驗室
 
-這個 repository 包含 MaxHeap 堆積排序、鏈結雜湊表，以及圖形 DFS/BFS 三個互動教學頁。所有頁面都不需要安裝套件或建置工具。
+這個 repository 包含 MaxHeap 堆積排序、鏈結雜湊表、圖形 DFS/BFS，以及最小生成樹四個互動教學頁。所有頁面都不需要安裝套件或建置工具。
 
 ## 頁面
 
 - MaxHeap：直接開啟根目錄的 `index.html`，或前往 GitHub Pages 首頁。
 - 鏈結雜湊表：開啟 `hash-table/index.html`，或前往 GitHub Pages 的 `/hash-table/` 路徑。
 - 圖形 DFS/BFS：開啟 `graph-traversal/index.html`，或前往 GitHub Pages 的 `/graph-traversal/` 路徑。
+- 最小生成樹：開啟 `minimum-spanning-tree/index.html`，或前往 GitHub Pages 的 `/minimum-spanning-tree/` 路徑。使用圖片中的六個校園地點與九條道路，可選任意起點逐步執行 Prim，或切換到 Kruskal 顯示全域最小生成樹。
 
 雜湊表可輸入剛好 15 個安全範圍內的整數，使用 `key % 13` 分配至 13 個 bucket，以鏈結法處理碰撞；另提供隨機資料、查找與分布統計。負數餘數會正規化至 `0` 到 `12`。圖形頁以 6 個頂點及指定 9 條無向邊呈現，可選擇 DFS 或 BFS、起點，並逐步或自動播放走訪過程。
 
