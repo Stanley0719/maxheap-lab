@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f2f1eb" />
+    <meta name="description" content="依照校園加權路網，逐步觀察 Dijkstra 如何更新距離、前驅與優先佇列，找出最短路徑。" />
+    <title>Dijkstra 最短路徑 | 結構實驗室</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=IBM+Plex+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css?v=1" />
+    <script src="./app.js?v=1" defer></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="wordmark" href="../" aria-label="結構實驗室首頁"><span class="brand-mark">D</span><span>結構實驗室</span></a>
+      <span class="topbar-note">資料結構 / 05</span>
+      <a class="top-link" href="../">MaxHeap <span aria-hidden="true">↗</span></a>
+      <a class="top-link" href="../graph-traversal/">DFS / BFS <span aria-hidden="true">↗</span></a>
+      <a class="top-link" href="../minimum-spanning-tree/">最小生成樹 <span aria-hidden="true">↗</span></a>
+    </header>
+
+    <main id="top">
+      <section class="intro" aria-labelledby="page-title">
+        <div class="eyebrow"><span class="eyebrow-dot"></span>SHORTEST PATH · DIJKSTRA</div>
+        <h1 id="page-title">一步一步鬆弛，<span>找到最短的路。</span></h1>
+        <p class="intro-copy">從起點出發，每次確定目前距離最短的地點，再試著縮短鄰居的距離。跟著優先佇列，看答案如何逐步形成。</p>
+      </section>
+
+      <section class="workspace" aria-label="Dijkstra 最短路徑操作區">
+        <div class="workspace-heading">
+          <div><span class="section-index">01 / SHORTEST PATH</span><h2>六個地點，八條雙向道路</h2></div>
+          <span class="rule-tag">非負權重 <i></i> |V| = 6</span>
+        </div>
+
+        <div class="graph-layout">
+          <div class="graph-panel">
+            <div class="graph-panel-head">
+              <div class="graph-label"><span class="live-dot"></span>WEIGHTED UNDIRECTED GRAPH <span class="graph-count">A — F</span></div>
+              <div class="graph-legend"><span><i class="legend-path"></i>最短路徑</span><span><i class="legend-current"></i>目前檢查</span></div>
+            </div>
+            <div class="graph-scroll">
+              <svg id="graph-svg" viewBox="0 0 600 360" role="img" aria-labelledby="graph-title graph-description">
+                <title id="graph-title">Dijkstra 校園最短路徑加權圖</title>
+                <desc id="graph-description">校門 A、圖書館 B、餐廳 C、系館 D、宿舍 E、體育館 F，以八條標示距離的雙向道路相連。點選地點可設定起點。</desc>
+                <g id="graph-edges" aria-hidden="true"></g>
+                <g id="graph-nodes"></g>
+              </svg>
+            </div>
+            <div class="graph-panel-foot"><span>道路皆為雙向；邊旁數字為距離</span><span>8 條邊</span></div>
+          </div>
+
+          <aside class="control-panel" aria-label="起訖點、優先佇列與運算狀態">
+            <div class="endpoint-row">
+              <label class="endpoint-field"><span class="field-label">起點</span><select id="start-node" aria-label="選擇起點"><option selected>A</option><option>B</option><option>C</option><option>D</option><option>E</option><option>F</option></select></label>
+              <span class="endpoint-arrow" aria-hidden="true">→</span>
+              <label class="endpoint-field"><span class="field-label">終點</span><select id="target-node" aria-label="選擇終點"><option>A</option><option>B</option><option>C</option><option>D</option><option>E</option><option selected>F</option></select></label>
+            </div>
+
+            <div class="queue-section">
+              <div class="result-heading"><span>優先佇列 <small>(DIST, 節點)</small></span><span id="queue-count">0 項</span></div>
+              <div class="queue-list" id="queue-list" aria-label="距離由小到大的優先佇列"></div>
+            </div>
+
+            <div class="metric-grid" aria-label="演算法統計">
+              <div class="metric-card"><span>取出次數</span><strong id="pop-count">0</strong></div>
+              <div class="metric-card"><span>過期跳過</span><strong id="stale-count">0</strong></div>
+              <div class="metric-card"><span>鬆弛成功</span><strong id="relax-count">0</strong></div>
+              <div class="metric-card"><span>已出堆</span><strong id="settled-count">0</strong></div>
+            </div>
+
+            <div class="table-section">
+              <div class="result-heading"><span>DIST / PARENT 表</span><span id="settled-total">出堆 0 / 6</span></div>
+              <div class="table-scroll">
+                <table>
+                  <thead><tr><th>點</th><th>DIST</th><th>PARENT</th><th>狀態</th></tr></thead>
+                  <tbody id="distance-rows"></tbody>
+                </table>
+              </div>
+            </div>
+          </aside>
+        </div>
+
+        <div class="playback">
+          <div class="playback-buttons">
+            <button class="button" id="previous-button" type="button" disabled>← 上一步</button>
+            <button class="button button-primary" id="step-button" type="button"><span aria-hidden="true">›</span> 下一步</button>
+            <button class="button" id="play-button" type="button" aria-label="自動播放演算法">▶ 自動播放</button>
+            <button class="button" id="reset-button" type="button">↺ 重來</button>
+          </div>
+          <label class="timeline"><span class="visually-hidden">演算法步驟</span><input id="timeline-input" type="range" min="0" max="25" value="0" /><output id="timeline-value" for="timeline-input">0 / 25</output></label>
+          <div class="status-line" id="operation-status" role="status" aria-live="polite"></div>
+          <div class="route-result" id="route-result" aria-live="polite"></div>
+        </div>
+      </section>
+
+      <section class="comparison" aria-labelledby="logic-title">
+        <div class="compare-heading">
+          <div><span class="section-index">02 / ALGORITHM</span><h2 id="logic-title">每一步都在做什麼？</h2></div>
+          <p>距離不是猜出來的：每次只確認一個目前最有希望的地點，並用它嘗試改善周圍的已知距離。</p>
+        </div>
+        <div class="logic-grid">
+          <article class="logic-card"><span class="logic-number">01</span><div><h3>初始化距離</h3><p>起點 dist = 0，其餘地點 dist = ∞；把 <code>(0, 起點)</code> 放進最小優先佇列。∞ 表示目前還不知道怎麼到達。</p></div></article>
+          <article class="logic-card"><span class="logic-number">02</span><div><h3>取出最小值並鬆弛</h3><p>取出距離最小且尚未確定的地點 u。對每個鄰居 v 計算 <code>候選距離 = dist[u] + weight(u, v)</code>；若更短，就更新 dist[v]、parent[v] 並重新入列。</p></div></article>
+          <article class="logic-card"><span class="logic-number">03</span><div><h3>回溯前驅還原路徑</h3><p>佇列清空後，從終點沿 parent 一路回到起點，再反轉順序。這張圖 A 到 F 的最短距離是 9；相同距離不覆蓋先找到的前驅。</p></div></article>
+        </div>
+        <div class="takeaway"><span class="takeaway-mark">!</span><p><strong>適用條件與效率。</strong> Dijkstra 要求道路權重非負；使用二元最小堆時，時間複雜度為 O((V + E) log V)。若圖中有負權重，應改用 Bellman–Ford 等演算法。</p><span class="sample-size">O((V + E) LOG V)</span></div>
+      </section>
+    </main>
+
+    <footer><span>結構實驗室 <span class="footer-sep">/</span> DIJKSTRA</span><span>先理解結構，再看見效率。</span></footer>
+  </body>
+</html>
