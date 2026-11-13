@@ -2,7 +2,13 @@
 
 .suggestions button { font-size: 10px; }
 .section-heading > span { text-align: right; }
+.answer-panel { margin-top: 12px; padding: 14px; border: 1px solid #cbd7e4; border-left: 4px solid var(--blue); border-radius: 8px; background: #edf2f8; }
+.answer-panel .answer-wrap { margin: 0; background: transparent; }
+.answer-panel .answer-heading { font-size: 11px; }
+.answer-panel .answer-output { margin-top: 9px; color: var(--ink); font-size: 17px; font-weight: 600; line-height: 1.65; }
 
 @media (max-width: 700px) {
   .section-heading > span { max-width: 150px; }
+  .answer-panel { padding: 12px; }
+  .answer-panel .answer-output { font-size: 15px; }
 }
