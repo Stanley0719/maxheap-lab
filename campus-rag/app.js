@@ -157,6 +157,32 @@ function renderQueryVector(terms) {
   vectorStatus.textContent = `${terms.length} 個檢索詞`;
 }
 
+function generateAnswer(question, match) {
+  const { id } = match.document;
+
+  if (id === "D1") return "海大餐廳平日供應時間：早餐 11:00–13:30，晚餐 17:00–19:00。";
+  if (id === "D2") return "餐廳可使用學生證儲值付款，也可以付現金。";
+  if (id === "D3") {
+    if (/週末|假日/u.test(question)) return "圖書館週末開放到 17:00。";
+    if (/平日|週間/u.test(question)) return "圖書館平日開放到晚上 22:00。";
+    return "圖書館平日開放到晚上 22:00，週末開放到 17:00。";
+  }
+  if (id === "D4") {
+    const asksDuration = /多久|幾天|借期|期限/u.test(question);
+    const asksCount = /幾本|多少本|數量/u.test(question);
+    if (asksDuration) return "大學部學生借書期限是 30 天。";
+    if (asksCount) return "大學部學生一次最多可以借 10 本書。";
+    return "大學部學生一次可以借 10 本書，借期 30 天。";
+  }
+  if (id === "D5") return "圖書逾期未還，每本每天罰 5 元。";
+  if (id === "D6") return "宿舍門禁時間是晚上 23:30；晚歸需要先登記。";
+  if (id === "D7") return "宿舍費用是每學期 12,000 元，需在開學前繳費。";
+  if (id === "D8") return "校車每 20 分鐘一班，行駛路線是校門到基隆火車站。";
+  if (id === "D9") return "體育館平日開放到 21:00，進場需攜帶學生證。";
+  if (id === "D10") return "機車停車證每學期 500 元，需在線上申請。";
+  return "目前沒有足夠資料回答這個問題。";
+}
+
 function renderResults(question, matches) {
   retrievedList.replaceChildren();
 
@@ -196,7 +222,7 @@ function renderResults(question, matches) {
     contexts,
     "請用繁體中文簡潔回答，勿補充資料中沒有的事實。",
   ].join("\n\n");
-  answerOutput.textContent = `根據 ${matches[0].document.id}：${matches[0].document.text}`;
+  answerOutput.textContent = generateAnswer(question, matches[0]);
   answerSource.textContent = matches.map(({ document }) => document.id).join("、");
   retrievalStatus.textContent = `檢索完成：從 10 段文件取出前 ${matches.length} 名`;
 }
@@ -243,3 +269,5 @@ document.querySelectorAll("[data-question]").forEach((button) => {
     search(questionInput.value);
   });
 });
+
+search(questionInput.value.trim());

@@ -79,6 +79,21 @@
           </div>
         </article>
       </section>
+
+      <section class="rag-guide" aria-labelledby="rag-guide-title">
+        <div class="guide-heading">
+          <span class="eyebrow">HOW RAG WORKS</span>
+          <h2 id="rag-guide-title">RAG 怎麼把文件變成回答？</h2>
+          <p>RAG 是「檢索增強生成」（Retrieval-Augmented Generation）：先找資料，再用資料回答，降低模型憑空猜測的機會。</p>
+        </div>
+        <ol class="rag-steps">
+          <li><span class="step-number">01</span><div><h3>準備知識</h3><p>整理可信文件，切成適合檢索的小段，保留文件編號等來源資訊。</p></div></li>
+          <li><span class="step-number">02</span><div><h3>檢索相關內容</h3><p>分析使用者問題，從知識庫找出最相關的段落；本頁用詞項比對與相關度排序示範。</p></div></li>
+          <li><span class="step-number">03</span><div><h3>組合提示</h3><p>把問題和檢索到的段落一起放入提示，並要求回答只依據資料、標示來源。</p></div></li>
+          <li><span class="step-number">04</span><div><h3>生成並查證</h3><p>語言模型根據提示整理自然語言回答，使用者可以回看引用的文件。</p></div></li>
+        </ol>
+        <aside class="demo-note"><strong>本頁示範範圍</strong><span>前端以詞項檢索與 Min-Heap 選出前 k 筆，將問題和來源組成 Prompt 預覽，再用文件對應的回答模板直接作答。為免誤導，這個靜態範例沒有呼叫真正的語言模型，也沒有使用向量嵌入或向量資料庫；正式 RAG 系統通常會加入這些元件。</span></aside>
+      </section>
     </main>
 
     <footer><span>結構實驗室 <span class="footer-sep">/</span> CAMPUS RAG</span><span>檢索有依據，回答看得見來源。</span></footer>
