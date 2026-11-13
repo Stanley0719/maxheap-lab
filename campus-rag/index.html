@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f4f6f9" />
+    <meta name="description" content="使用校園文件檢索、Min-Heap 前 k 名選取與引用來源，互動理解 RAG 問答流程。" />
+    <title>校園問答 RAG | 結構實驗室</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./app.js" defer></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="../" aria-label="返回結構實驗室">校園問答 <span>RAG LAB</span></a>
+      <span class="topbar-note">純前端詞項檢索 · 不呼叫外部模型</span>
+      <a class="back-link" href="../">返回結構實驗室 <span aria-hidden="true">↗</span></a>
+    </header>
+
+    <main>
+      <section class="question-panel" aria-labelledby="question-title">
+        <div class="eyebrow">QUESTION <span>01 / ASK</span></div>
+        <form id="question-form">
+          <label class="sr-only" for="question-input">校園問題</label>
+          <div class="ask-row">
+            <input id="question-input" type="text" value="餐廳幾點開放？" autocomplete="off" />
+            <button type="submit">檢索並回答 <span aria-hidden="true">↗</span></button>
+          </div>
+          <div class="vector-heading">
+            <span>問題的詞項向量</span>
+            <span id="vector-status">尚未計算</span>
+          </div>
+          <div id="query-terms" class="query-terms" aria-live="polite">
+            <span class="term-placeholder">送出問題後顯示檢索詞項</span>
+          </div>
+          <div class="suggestions" aria-label="範例問題">
+            <span>試試看</span>
+            <button type="button" data-question="圖書館週末開放到幾點？">圖書館時間</button>
+            <button type="button" data-question="借書可以借幾本、借多久？">借書規定</button>
+            <button type="button" data-question="宿舍每學期多少錢？">宿舍費用</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="documents-section" aria-labelledby="documents-title">
+        <div class="section-heading">
+          <h1 id="documents-title">DOCUMENTS <span>· 10 段文件</span></h1>
+          <span>校園知識庫 / 可追溯來源</span>
+        </div>
+        <ol id="document-list" class="document-list"></ol>
+      </section>
+
+      <section class="pipeline" aria-label="RAG 檢索與生成結果">
+        <article class="result-card heap-card">
+          <div class="card-heading">
+            <div><span class="eyebrow">RETRIEVAL</span><h2>MIN-HEAP <span>· 目前前 k 名</span></h2></div>
+            <label for="top-k">k
+              <select id="top-k" aria-label="檢索文件數量">
+                <option value="1">1</option>
+                <option value="2" selected>2</option>
+              </select>
+            </label>
+          </div>
+          <p class="card-description">依相關度保留最高分文件；Heap 根節點是目前最低分。</p>
+          <div id="retrieved-list" class="retrieved-list" aria-live="polite">
+            <p class="empty-state">最多裝 2 筆，現在是空的。送出問題開始檢索。</p>
+          </div>
+          <div id="retrieval-status" class="card-foot" role="status">尚未執行檢索</div>
+        </article>
+
+        <article class="result-card prompt-card">
+          <div class="card-heading">
+            <div><span class="eyebrow">GENERATION</span><h2>PROMPT <span>· 模型輸入預覽</span></h2></div>
+          </div>
+          <p class="card-description">顯示含來源的提示；回答以文件摘錄產生，不呼叫外部模型。</p>
+          <pre id="prompt-output" class="prompt-output">還沒組好。檢索完才知道要放哪些資料。</pre>
+          <div class="answer-wrap">
+            <div class="answer-heading"><span>ANSWER</span><span id="answer-source">等待檢索</span></div>
+            <p id="answer-output" class="answer-output">送出問題後，這裡會顯示根據文件整理的回答。</p>
+          </div>
+        </article>
+      </section>
+    </main>
+
+    <footer><span>結構實驗室 <span class="footer-sep">/</span> CAMPUS RAG</span><span>檢索有依據，回答看得見來源。</span></footer>
+  </body>
+</html>
