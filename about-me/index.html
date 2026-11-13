@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f4f6f9" />
+    <meta name="description" content="以個人簡介為知識庫的 RAG 問答示範，回答張博智的學經歷、專長與興趣。" />
+    <title>關於我 | RAG 問答</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./app.js" defer></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="../" aria-label="返回結構實驗室">關於我 <span>RAG Q&A</span></a>
+      <span class="topbar-note">個人簡介知識庫 · 可追溯來源</span>
+      <a class="back-link" href="../campus-rag/">校園問答 RAG</a>
+      <a class="back-link" href="../">返回結構實驗室 <span aria-hidden="true">↗</span></a>
+    </header>
+
+    <main>
+      <section class="question-panel" aria-labelledby="question-title">
+        <div class="eyebrow">ABOUT ME <span>01 / ASK</span></div>
+        <form id="question-form">
+          <label class="sr-only" for="question-input">關於我的問題</label>
+          <div class="ask-row">
+            <input id="question-input" type="text" value="你的英文能力如何？" autocomplete="off" />
+            <button type="submit">檢索並回答 <span aria-hidden="true">↗</span></button>
+          </div>
+          <div class="vector-heading">
+            <span>問題的詞項向量</span>
+            <span id="vector-status">尚未計算</span>
+          </div>
+          <div id="query-terms" class="query-terms" aria-live="polite">
+            <span class="term-placeholder">送出問題後顯示檢索詞項</span>
+          </div>
+          <div class="suggestions" aria-label="範例問題">
+            <span>試試看</span>
+            <button type="button" data-question="你讀哪間大學、什麼科系？">學校科系</button>
+            <button type="button" data-question="你的英文能力如何？">英文專長</button>
+            <button type="button" data-question="你有哪些興趣和才藝？">興趣才藝</button>
+            <button type="button" data-question="你假日做什麼工作？">假日工作</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="documents-section" aria-labelledby="documents-title">
+        <div class="section-heading">
+          <h1 id="documents-title">ABOUT ME DOCUMENTS <span>· 10 段簡介</span></h1>
+          <span>公開版已省略完整生日與居住行政區</span>
+        </div>
+        <ol id="document-list" class="document-list"></ol>
+      </section>
+
+      <section class="pipeline" aria-label="個人簡介 RAG 檢索與回答">
+        <article class="result-card heap-card">
+          <div class="card-heading">
+            <div><span class="eyebrow">RETRIEVAL</span><h2>MIN-HEAP <span>· 目前前 k 名</span></h2></div>
+            <label for="top-k">k
+              <select id="top-k" aria-label="檢索文件數量">
+                <option value="1">1</option>
+                <option value="2" selected>2</option>
+              </select>
+            </label>
+          </div>
+          <p class="card-description">依相關度選出個人簡介段落，並顯示引用來源。</p>
+          <div id="retrieved-list" class="retrieved-list" aria-live="polite"></div>
+          <div id="retrieval-status" class="card-foot" role="status">準備檢索</div>
+        </article>
+
+        <article class="result-card prompt-card">
+          <div class="card-heading">
+            <div><span class="eyebrow">GENERATION</span><h2>PROMPT <span>· 回答依據預覽</span></h2></div>
+          </div>
+          <p class="card-description">顯示本次回答使用的問題與簡介資料；不呼叫外部模型。</p>
+          <pre id="prompt-output" class="prompt-output">送出問題後顯示檢索來源與回答規則。</pre>
+          <div class="answer-wrap">
+            <div class="answer-heading"><span>ANSWER</span><span id="answer-source">等待檢索</span></div>
+            <p id="answer-output" class="answer-output">送出問題，看看我如何根據簡介資料回答。</p>
+          </div>
+        </article>
+      </section>
+
+      <section class="rag-guide" aria-labelledby="rag-guide-title">
+        <div class="guide-heading">
+          <span class="eyebrow">HOW RAG WORKS</span>
+          <h2 id="rag-guide-title">RAG 怎麼回答「關於我」？</h2>
+          <p>RAG 是「檢索增強生成」：先從知識庫找出與問題相關的內容，再根據找到的資料回答並標示來源。</p>
+        </div>
+        <ol class="rag-steps">
+          <li><span class="step-number">01</span><div><h3>整理個人資料</h3><p>把學校、專長、興趣等內容整理成短文件，並保留文件編號。</p></div></li>
+          <li><span class="step-number">02</span><div><h3>檢索相關段落</h3><p>分析問題中的詞項，計算各文件相關度，再取出最相關的前 k 筆。</p></div></li>
+          <li><span class="step-number">03</span><div><h3>組合回答依據</h3><p>將問題和檢索到的資料放進提示，要求回答不要超出資料內容。</p></div></li>
+          <li><span class="step-number">04</span><div><h3>回答並附來源</h3><p>顯示簡潔回答及對應文件編號，方便讀者檢查資訊從何而來。</p></div></li>
+        </ol>
+        <aside class="demo-note"><strong>本頁示範範圍</strong><span>此頁使用詞項比對、相關度排序及 Min-Heap 選取前 k 筆，並以回答模板整理答案；Prompt 區是提示預覽，不會呼叫真正的語言模型或向量資料庫。正式 RAG 系統可以再接入文件嵌入與 LLM 生成。</span></aside>
+      </section>
+    </main>
+
+    <footer><span>ABOUT ME <span class="footer-sep">/</span> RAG Q&A</span><span>以資料回答，並讓來源看得見。</span></footer>
+  </body>
+</html>
